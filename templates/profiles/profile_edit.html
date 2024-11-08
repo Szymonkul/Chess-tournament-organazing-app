@@ -1,0 +1,63 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg rounded-4">
+                    <div class="card-header bg-primary text-white text-center rounded-top-4 py-3">
+                        <h2 class="mb-0">Edytuj Profil: <strong>{{ user.username }}</strong></h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="id_first_name" class="form-label"><strong>Imię:</strong></label>
+                                {{ form.first_name|default:'imie' }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_last_name" class="form-label"><strong>Nazwisko:</strong></label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_city" class="form-label"><strong>Miasto:</strong></label>
+                                {{ form.city }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_club" class="form-label"><strong>Klub:</strong></label>
+                                {{ form.club }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_gender" class="form-label"><strong>Płeć:</strong></label>
+                                {{ form.gender }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_birth_date" class="form-label"><strong>Data urodzenia:</strong></label>
+                                {{ form.birth_date }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_phone_number" class="form-label"><strong>Numer telefonu:</strong></label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_rating_fide" class="form-label"><strong>Ranking FIDE:</strong></label>
+                                {{ form.rating_fide }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_title_or_category" class="form-label"><strong>Tytuł lub
+                                    kategoria:</strong></label>
+                                {{ form.title_or_category|default:'Bk' }}
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="text-center btn btn-primary btn-outline-warning btn-lg">Zatwierdź</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

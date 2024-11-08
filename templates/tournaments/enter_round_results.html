@@ -1,0 +1,45 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+  <div class="container my-5 bg-light rounded-4 ">
+        <h2 class="mb-4">Wyniki Rundy {{ round.round_number }} - Turniej {{ tournament.name }}</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ formset.management_form }}
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th scope="col">Stół</th>
+                        <th scope="col">Gracz Białymi</th>
+                        <th scope="col">Gracz Czarnymi</th>
+                        <th scope="col">Wynik</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for form in formset %}
+
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        <tr>
+                            <td>{{ form.instance.table_number }}</td>
+                            <td>{{ form.instance.white_player.user.profile.first_name }} {{ form.instance.white_player.user.profile.last_name }}</td>
+                            <td>{{ form.instance.black_player.user.profile.last_name }} {{ form.instance.black_player.user.profile.last_name }}</td>
+                            <td>{{ form.result }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+<div class="text-center mb-3    ">
+            <button type="submit" class="btn btn-primary mt-3">Zapisz wyniki</button>
+            <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-secondary mt-3">Powrót do turnieju</a>
+
+    </div>
+        </form>
+
+    </div>
+{% endblock %}

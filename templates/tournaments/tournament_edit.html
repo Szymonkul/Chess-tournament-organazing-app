@@ -1,0 +1,81 @@
+{% extends 'core/index.html' %}
+
+
+{% block title %}
+    Edytuj Turniej
+{% endblock %}
+
+{% block content %}
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-lg rounded-4">
+                    <div class="card-header bg-dark text-white text-center rounded-top-4 py-3">
+                        <h2 class="mb-0">Edytuj Turniej: <strong>{{ tournament.name }}</strong></h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <!-- Informacje ogólne -->
+                            <h4 class="mb-3">Informacje ogólne</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_name" class="form-label"><strong>Nazwa Turnieju:</strong></label>
+                                    {{ tournament_form.name }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_arbiter" class="form-label"><strong>Sędzia:</strong></label>
+                                    {{ tournament_form.arbiter }}
+                                </div>
+
+                             </div>
+
+
+                            <!-- Opis turnieju -->
+                            <div class="mb-3">
+                                <label for="id_description" class="form-label"><strong>Opis turnieju:</strong></label>
+                                {{ tournament_form.description }}
+                            </div>
+
+
+
+                            <div class="mb-3">
+                                <label class="form-label"><h4>Usuń uczestników:</h4></label>
+                                <div class="list-group">
+                                    {% for player in players %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="mb-0"><strong>Imie:</strong> {{ player.user.profile.first_name }}</span>
+                                                <span class="mb-0"><strong>Nazwisko:</strong> {{ player.user.profile.last_name }}</span>
+                                                <span class="mb-0"><strong>Tytuł lub kategoria:</strong> {{ player.user.profile.title_or_category }}</span>
+                                                <span class="mb-0"><strong>Rok urodzenia:</strong> {{ player.user.profile.birth_date|date:"Y" }}</span>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" name="players_to_remove"
+                                                       value="{{ player.id }}">
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Przyciski akcji -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-check"></i> Zapisz Zmiany
+                                </button>
+                                <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left"></i> Wróć
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

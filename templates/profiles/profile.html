@@ -1,0 +1,111 @@
+{% extends 'core/index.html' %}
+
+{% block title %}
+    Profile | {{ user.username }}
+{% endblock %}
+
+
+{% block style %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg rounded-4">
+                    <div class="card-header bg-primary text-white text-center rounded-top-4 py-3">
+                        <h2 class="mb-2">Profil użytkownika: <strong>{{ profile.user.username }}</strong></h2>
+                        {% if profile.title %}
+                            <h5 class="text-warning mb-0">
+                                <i class="fas fa-chess-knight"></i> {{ profile.get_title_display }}
+                            </h5>
+                        {% else %}
+                            <h5 class="text-warning mb-0">
+                                <i class="fas fa-star"></i> {{ profile.get_category_display }}
+                            </h5>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h4 class="text-center mb-4">Informacje Osobiste</h4>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Imię:</strong></label>
+                                    <p class="form-control">{{ profile.first_name|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Nazwisko:</strong></label>
+                                    <p class="form-control">{{ profile.last_name|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Data Urodzenia:</strong></label>
+                                    <p class="form-control">{{ profile.birth_date|date:"d-m-Y"|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Płeć:</strong></label>
+                                    <p class="form-control">{{ profile.get_gender_display|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label><strong>Miasto:</strong></label>
+                                    <p class="form-control">{{ profile.city|default:"N/D" }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Klub:</strong></label>
+                                    <p class="form-control">{{ profile.club|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label><strong>Numer Telefonu:</strong></label>
+                                    <p class="form-control">{{ profile.phone_number|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="text-center mb-4">Rankingi Szachowe</h4>
+                        {% if title %}
+                            <h2 class="text-center text-success">Tytuł: {{ profile.title_or_category }}</h2>
+                        {% elif profile.title_or_category == 'Bk' %}
+                            <h2 class="text-center text-warning">Brak Kategorii</h2>
+                        {% else %}
+                            <h2 class="text-center text-success">Kategoria: {{ profile.title_or_category }}</h2>
+
+                        {% endif %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Ranking FIDE:</strong></label>
+                                    <p class="form-control">{{ profile.rating_fide|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Ranking PZSzach:</strong></label>
+                                    <p class="form-control">{{ profile.rating_pzszach|default:"N/D" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

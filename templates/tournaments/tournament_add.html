@@ -1,0 +1,125 @@
+{% extends 'core/index.html' %}
+
+{% block title %}
+    Dodaj Turniej
+{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeField = document.getElementById('id_pace');
+            const rankingDiv = document.getElementById('div_id_ranking');
+            const classicTypes = ['30','60','120','30+10','60+30']
+
+            function toggleRankingField() {
+                if (classicTypes.includes(typeField.value)) {
+                    rankingDiv.style.display = 'block';
+                } else {
+                    rankingDiv.style.display = 'none';
+                    document.getElementById('id_ranking').value = 'Brak'; // Reset ranking to 'Brak'
+                }
+            }
+
+            // Initialize field state on page load
+            toggleRankingField();
+
+            // Add event listener to toggle field on change
+            typeField.addEventListener('change', toggleRankingField);
+        });
+    </script>
+
+    <div class="container d-flex justify-content-center pt-2 min-vh-100 align-center py-3">
+        <div class="bg-light align-self-center align-content-lg-start rounded-3 px-3">
+            <h2 class="text-center px-3 py-2 h1 bg-body-secondary rounded-3">Utwórz turniej</h2>
+            <form method="post" action="{% url 'add_tournament' %}">
+                {% csrf_token %}
+
+                <!-- Tournament Name -->
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">Nazwa turnieju</label>
+                    <input type="text" class="form-control" id="id_name" name="name" required>
+                </div>
+                            <!-- Tournament Region  -->
+                <div class="mb-3">
+                    <label for="id_region" class="form-label">Województwo</label>
+                    <select class="form-select" id="id_region" name="region" required>
+                        {% for region in form.region.field.choices %}
+                            <option value="{{ region.0 }}">{{ region.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                            <!-- Tournament City -->
+                <div class="mb-3">
+                    <label for="id_city" class="form-label">Miasto</label>
+                    <input type="text" class="form-control" id="id_city" name="city" required>
+                </div>
+
+                <!-- Begin Date -->
+                <div class="mb-3">
+                    <label for="id_date_begin" class="form-label">Data rozpoczęcia</label>
+                    <input type="date" class="form-control" id="id_date_begin" name="date_begin" required>
+                </div>
+
+                <!-- End Date -->
+                <div class="mb-3">
+                    <label for="id_date_end" class="form-label">Data zakończenia</label>
+                    <input type="date" class="form-control" id="id_date_end" name="date_end" required>
+                </div>
+
+                <!-- Pace of game -->
+                <div class="mb-3">
+                    <label for="id_pace" class="form-label">Tempo gry</label>
+                    <select class="form-select" id="id_pace" name="pace" required>
+                        {% for pace in form.pace.field.choices %}
+                            <option value="{{ pace.0 }}">{{ pace.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Ranking Type -->
+                <div id="div_id_ranking" style="display:none;">
+                    <label for="id_ranking "class="form-label">Ranking</label>
+                    <select name="ranking" id="id_ranking" class="form-select">
+                        <option value="Brak">Brak</option>
+                        <option value="FIDE">FIDE</option>
+                        <option value="PZSzach">PZSzach</option>
+                    </select>
+                </div>
+                <!-- Arbiter -->
+                <div class="mb-3">
+                    <label for="id_arbiter" class="form-label">Sędzia</label>
+                    <select class="form-select" id="id_arbiter" name="arbiter" required>
+                        {% for arbiter in arbiters %}
+                            <option value="{{ arbiter.id }}">{{ arbiter.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if form.non_field_errors or form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            {% for error in form.errors %}
+                                <li>{{ error }}</li>
+
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <div class="text-center py-3">
+                    <button type="submit" class="btn btn-primary ">Utwórz turniej</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    </div>
+{% endblock %}

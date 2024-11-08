@@ -1,0 +1,51 @@
+{% extends 'core/index.html' %}
+
+{% block title %}
+    Historia Turniejów
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+    <div class="container bg-light min-vh-100 my-5 p-4 rounded-4 shadow-sm">
+        <h1 class="text-center fw-bold my-4 text-uppercase">Moje Turnieje</h1>
+        <table class="table table-hover table-bordered">
+            <tbody class="border-warning border border-1">
+            {% for month, tournaments in grouped_tournaments.items %}
+                <tr class="bg-primary text-white">
+                    <td colspan="5" class="text-center h2 py-3 bg-danger">{{ month }}</td>
+                </tr>
+                <thead class="table-dark text-center">
+                <tr>
+                    <th class="col-1">Data</th>
+                    <th class="col-4">Nazwa</th>
+                    <th class="col-1">Typ Turnieju</th>
+                    <th class="col-1">Tempo</th>
+                    <th class="col-1">Lokalizacja</th>
+                </tr>
+                </thead>
+                {% for tournament in tournaments %}
+                    <tr class="{% if tournament.status == 'Nadchodzący' %}bg-danger text-white{% elif tournament.status == 'Trwający' %}bg-warning text-dark{% elif tournament.status == 'Zakończony' %}bg-success text-white{% endif %}">
+                        <td class="text-center align-middle small">
+                            {{ tournament.date_begin|date:"d M" }}<br>
+                            <span class="badge {% if tournament.status == "Trwający" %}bg-danger{% else %}bg-success{% endif %}">{{ tournament.status }}</span>
+                        </td>
+                        <td class="align-middle"><a href="{% url 'tournament_detail' tournament.id %}" class="text-info page-link">{{ tournament.name }}</a></td>
+                        <td class="align-middle text-center">{{ tournament.type_of_tournament }}
+                            {% if tournament.ranking != "Brak" %}
+                                <br>
+                                {{ tournament.ranking }}
+                            {% endif %}
+                        </td>
+                        <td class="align-middle text-center">{{ tournament.pace }}</td>
+                        <td class="align-middle text-center">
+                            {{ tournament.region }}<br>{{ tournament.city }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends 'core/index.html' %}
+
+{% block title %}
+    Tournament | {{ tournament.name }}
+{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-header bg-primary text-white text-center rounded-top-4">
+                        <h2>{{ tournament.name }}</h2>
+                        {% if request.user == tournament.organizer  and tournament.status != "Zakończony" %}
+                            <a href="{% url 'tournament_edit' tournament.id %}"
+                               class="btn btn-primary btn-outline-warning border-0">Edytuj Turniej</a>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+                        <!-- General Informations -->
+                        <h4 class="mb-4">Informacje Ogólne</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Data rozpoczęcia:</strong> {{ tournament.date_begin|date:"d-m-Y" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Data zakończenia:</strong> {{ tournament.date_end|date:"d-m-Y" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Tempo:</strong> {{ tournament.pace }} {{ tournament.ranking }}
+
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Sędzia:</strong> {{ tournament.arbiter.profile.first_name }} {{ tournament.arbiter.profile.last_name }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Organizator:</strong> {{ tournament.organizer.profile.first_name }} {{ tournament.organizer.profile.last_name }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Ilość rund:</strong> {{ tournament.rounds_amount }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Status: </strong> {{ tournament.status }}</p>
+                            </div>
+                        </div>
+
+
+                        <!-- Description -->
+                        <h4 class="mb-4">Opis</h4>
+                        <div class="row mb-3 border border-1 bg-light mx-1 rounded-3">
+                            <pre>{{ tournament.description|default:"Brak Dodanego opisu" }}</pre>
+                        </div>
+
+                        <!-- Stats -->
+                        <h4 class="mb-4">Statystyki</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <p><strong>Ilość graczy:</strong> {{ total_players }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p><strong>Ilość graczy z rankingiem FIDE:</strong> {{ players_with_fide_count }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p><strong>Średni ranking
+                                    FIDE:</strong> {{ average_fide_rating|default:'Brak'|floatformat:0 }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p><strong>Średni ranking PZSzach:</strong> {{ average_pzszach_rating|floatformat:2 }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Player List-->
+                        <h4 class="mb-4">Lista Graczy</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>Tytuł lub Kategoria</th>
+                                    <th>Imię</th>
+                                    <th>Nazwisko</th>
+                                    <th>Ranking FIDE</th>
+                                    <th>Ranking PZSzach</th>
+                                    <th>Klub / Miasto</th>
+                                    <th>Rok Urodzenia</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for player in players %}
+                                    <tr>
+                                        <td>{{ player.user.profile.title_or_category }}</td>
+                                        <td>{{ player.user.profile.first_name }}</td>
+                                        <td>{{ player.user.profile.last_name }}</td>
+                                        <td>{{ player.user.profile.rating_fide }}</td>
+                                        <td>{{ player.user.profile.rating_pzszach }}</td>
+                                        {% if player.user.profile.club %}
+                                            <td>{{ player.user.profile.club }}</td>
+                                        {% else %}
+                                            <td>{{ player.user.profile.city }}</td>
+                                        {% endif %}
+                                        <td>{{ player.user.profile.birth_date|date:"Y" }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                        <!-- Rounds details -->
+
+                        <h3>Rundy</h3>
+                        <div class="row">
+                            {% for round in rounds %}
+                                {% if round %}
+                                    <div class="col-md-4">
+                                        <div class="card mb-3 shadow-sm">
+                                            <div class="card-body d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <h5 class="card-title mb-0">Runda {{ round.round_number }}</h5>
+                                                </div>
+                                                <a href="{% url 'round_detail' tournament.id round.id %}"
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-arrow-right-circle"></i> Szczegóły
+                                                </a>
+                                                {% if request.user == tournament.organizer and tournament.status != "Zakończony" %}
+
+                                                    <a href="{% url 'enter_round_results' tournament.id round.id %}"
+                                                       class="btn btn-primary btn-sm">
+                                                        <i class="bi bi-arrow-right-circle"></i> Podaj Wyniki
+                                                    </a>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <!-- Result Table -->
+                        {% if tournament.status == 'Zakończony' %}
+                            <h4 class="mb-4">Wyniki Turnieju</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th>Pozycja</th>
+                                        <th>Gracz</th>
+                                        <th>Punkty</th>
+                                        <th>Mecze</th>
+                                        {% if tournament.ranking == "PZSzach" or tournament.ranking == "FIDE" %}
+                                            <th>Ranking startowy</th>
+                                            <th>Średni ranking przeciwników</th>
+                                            <th>Ranking osiągniety</th>
+                                        {% endif %}
+
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for player in players %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ player.user.profile.first_name }} {{ player.user.profile.last_name }}</td>
+                                            <td>{{ player.points }}</td>
+                                            <td>{{ player.matches_count }}</td>
+                                            {% if tournament.ranking == "PZSzach" or tournament.ranking == "FIDE" %}
+
+                                                <td>{{ player.start_rating }}</td>
+                                                <td>{{ player.avarage_oponents_rating }}</td>
+                                                <td>{{ player.achieved_rating }}</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    {% if tournament.status == 'Nadchodzący' and request.user == tournament.organizer %}
+                        <form method="post" action="{% url 'start_tournament' tournament.id %}">
+                            {% csrf_token %}
+                            <div class="text-center my-2">
+                                <button type="submit" class="btn btn-dark text-center">Rozpocznij turniej</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                    {% if tournament.status == 'Nadchodzący' %}
+
+                        {% if request.user.is_authenticated and request.user.profile %}
+                            {% if  not is_signed %}
+                                <form method="post" action="{% url 'join_tournament' tournament.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success text-center">Dołącz do turnieju
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p class="text-success text-center">Już dołączyłeś do tego turnieju.</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-center text-info">Musisz być zalogowany, aby dołączyć do turnieju.</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+{% endblock %}
